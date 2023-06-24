@@ -12,15 +12,16 @@ package sbu.cs;
 
 public class UseInterrupts
 {
-/*
-    TODO
-     Analyse the following class and add new code where necessary.
-     If an object from this type of thread is Interrupted, it must print this:
-        "{ThreadName} has been interrupted"
-     And then terminate itself.
- */
+    /*
+        TODO
+         Analyse the following class and add new code where necessary.
+         If an object from this type of thread is Interrupted, it must print this:
+            "{ThreadName} has been interrupted"
+         And then terminate itself.
+     */
     public static class SleepThread extends Thread {
         int sleepCounter;
+        long startTime;
 
         public SleepThread(int sleepCounter) {
             super();
@@ -45,18 +46,22 @@ public class UseInterrupts
             }
 
         }
+        public void setTime(){
+            startTime = System.currentTimeMillis();
+        }
     }
 
-/*
-    TODO
-     Analyse the following class and add new code where necessary.
-     If an object from this type of thread is Interrupted, it must print this:
-        "{ThreadName} has been interrupted"
-     And then terminate itself.
-     (Hint: Use the isInterrupted() method)
- */
+    /*
+        TODO
+         Analyse the following class and add new code where necessary.
+         If an object from this type of thread is Interrupted, it must print this:
+            "{ThreadName} has been interrupted"
+         And then terminate itself.
+         (Hint: Use the isInterrupted() method)
+     */
     public static class LoopThread extends Thread {
         int value;
+        long startTime;
         public LoopThread(int value) {
             super();
             this.value = value;
@@ -72,20 +77,43 @@ public class UseInterrupts
 
             }
         }
+        public void setTime(){
+            startTime = System.currentTimeMillis();
+        }
     }
 
-/*
-    You can add new code to the main function. This is where you must utilize interrupts.
-    No existing line of code should be changed or deleted.
- */
+    /*
+        You can add new code to the main function. This is where you must utilize interrupts.
+        No existing line of code should be changed or deleted.
+     */
     public static void main(String[] args) {
         SleepThread sleepThread = new SleepThread(5);
         sleepThread.start();
+
 
         // TODO  Check if this thread runs for longer than 3 seconds (if it does, interrupt it)
 
         LoopThread loopThread = new LoopThread(3);
         loopThread.start();
+        try{
+            Thread.sleep(3000);
+            if(sleepThread.isAlive()){
+                System.out.println(sleepThread.getName() + "has been interrupted");
+                sleepThread.interrupt();
+            }
+            if(loopThread.isAlive())
+            {
+                System.out.println(loopThread.getName() + "has been interrupted");
+                loopThread.interrupt();
+            }
+            sleepThread.join();
+            loopThread.join();
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
 
         // TODO  Check if this thread runs for longer than 3 seconds (if it does, interrupt it)
 

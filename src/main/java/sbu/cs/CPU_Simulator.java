@@ -1,8 +1,6 @@
 package sbu.cs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /*
     For this exercise, you must simulate a CPU with a single core.
@@ -23,16 +21,21 @@ public class CPU_Simulator
         long processingTime;
         String ID;
         public Task(String ID, long processingTime) {
-        // TODO
+            this.ID = ID;
+            this.processingTime = processingTime;
         }
 
-    /*
-        Simulate running a task by utilizing the sleep method for the duration of
-        the task's processingTime. The processing time is given in milliseconds.
-    */
+        /*
+            Simulate running a task by utilizing the sleep method for the duration of
+            the task's processingTime. The processing time is given in milliseconds.
+        */
         @Override
         public void run() {
-        // TODO
+            try {
+                Thread.sleep(processingTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -41,14 +44,42 @@ public class CPU_Simulator
         Here the CPU selects the next shortest task to run (also known as the
         shortest task first scheduling algorithm) and creates a thread for it to run.
     */
-    public ArrayList<String> startSimulation(ArrayList<Task> tasks) {
+    public static ArrayList<String> startSimulation(ArrayList<Task> tasks) {
         ArrayList<String> executedTasks = new ArrayList<>();
 
-        // TODO
+        while (!tasks.isEmpty()){
+            Task currentTask = tasks.get(0);
+            for (int i = 0; i < tasks.size(); i++) {
+                if(currentTask.processingTime > tasks.get(i).processingTime)
+                {
+                    currentTask = tasks.get(i);
+                }
+            }
+
+            Thread thread1= new Thread(currentTask);
+            thread1.start();
+
+            try {
+                thread1.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            executedTasks.add(currentTask.ID);
+            tasks.remove(currentTask);
+        }
+
 
         return executedTasks;
     }
 
     public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        ArrayList<Task> tasks = new ArrayList<>();
+        while (input.hasNext()){
+            String ID = input.next();
+            long processingTime = input.nextLong();
+            tasks.add(new Task(ID,processingTime));
+        }
+        startSimulation(tasks);
     }
 }
